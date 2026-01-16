@@ -1,0 +1,118 @@
+<!DOCTYPE html>
+
+<html lang="en">
+<head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Merriweather:wght@400;700;900&amp;family=Lato:wght@300;400;700&amp;display=swap" rel="stylesheet"/>
+<link href="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@6.4.0/css/all.min.css" rel="stylesheet"/>
+<style>
+    .font-serif { font-family: 'Merriweather', serif; }
+    .font-sans { font-family: 'Lato', sans-serif; }
+    .bg-navy-primary { background-color: #003366; } 
+    .text-navy-primary { color: #003366; }
+    .border-navy-primary { border-color: #003366; }
+    .text-accent-yellow { color: #F59E0B; }
+    .text-alert-red { color: #DC2626; }
+    
+    /* Custom Bullet Styling */
+    ul.academic-list li {
+        position: relative;
+        padding-left: 2rem;
+        margin-bottom: 1.15rem;
+    }
+    ul.academic-list li::before {
+        content: "\f057"; /* FontAwesome circle-xmark for Don'ts */
+        font-family: "Font Awesome 6 Free";
+        font-weight: 900;
+        position: absolute;
+        left: 0;
+        top: 0.25rem;
+        color: #DC2626; /* Alert Red for Don'ts */
+        font-size: 1.25rem;
+    }
+</style>
+</head>
+<body class="m-0 p-0 overflow-hidden bg-gray-50">
+<div class="w-[1280px] h-[720px] bg-white flex flex-col shadow-xl mx-auto overflow-hidden relative">
+<!-- Top Decorative Bar -->
+<div class="h-4 bg-navy-primary w-full z-10"></div>
+<!-- Header Section -->
+<div class="px-16 pt-12 pb-6 border-b border-gray-100 flex justify-between items-end relative z-10">
+<div class="max-w-4xl">
+<p class="text-sm font-sans font-bold text-gray-400 uppercase tracking-widest mb-2">
+                Presentation Delivery
+            </p>
+<h2 class="text-5xl font-serif font-bold text-navy-primary">
+                Don'ts During Presentation
+            </h2>
+</div>
+<!-- Topic Icon/Watermark for Header -->
+<div class="opacity-10 text-navy-primary">
+<i class="fas fa-ban text-6xl"></i>
+</div>
+</div>
+<!-- Main Content Area -->
+<div class="flex-1 px-16 py-8 flex relative z-0">
+<!-- Left Content (Text) -->
+<div class="w-2/3 pr-12">
+<ul class="academic-list font-sans text-2xl text-gray-700 leading-relaxed">
+<li>
+<p>Do <span class="font-bold text-alert-red">not</span> read directly from the slides; this breaks connection with the audience.</p>
+</li>
+<li>
+<p>Avoid crowding slides with excessive text or complex paragraphs.</p>
+</li>
+<li>
+<p>Do not speak too fast or too softly; ensure your voice reaches the back of the room.</p>
+</li>
+<li>
+<p>Eliminate filler words like <span class="italic">"um," "uh,"</span> and <span class="italic">"you know"</span> to sound more professional.</p>
+</li>
+<li>
+<p>Never turn your back completely to the audience to look at the screen.</p>
+</li>
+<li>
+<p>Avoid arguing with the audience; handle difficult questions or challenges calmly.</p>
+</li>
+</ul>
+</div>
+<!-- Right Side - Visual Support / Emphasis Box -->
+<div class="w-1/3 pl-8 border-l border-gray-100 flex flex-col justify-center">
+<div class="bg-red-50 p-8 rounded-lg border-t-4 border-red-600 shadow-sm">
+<div class="text-center mb-4">
+<i class="fas fa-exclamation-triangle text-4xl text-alert-red"></i>
+</div>
+<h3 class="text-xl font-serif font-bold text-navy-primary text-center mb-4">Critical Warning</h3>
+<p class="text-lg text-gray-600 font-sans italic text-center">
+                    "Your slides are there to support you, not to replace you."
+                </p>
+</div>
+<!-- Context Image Placeholder -->
+<div class="mt-8 opacity-60 flex justify-center flex-col items-center">
+<div class="w-32 h-32 border-4 border-gray-200 rounded-full flex items-center justify-center mb-4 relative">
+<i class="fas fa-eye-slash text-5xl text-gray-300"></i>
+<div class="absolute w-full h-1 bg-gray-300 rotate-45 transform"></div>
+</div>
+<p class="text-sm font-sans font-bold text-gray-400 uppercase tracking-wide">Avoid Disconnection</p>
+</div>
+</div>
+</div>
+<!-- Footer -->
+<div class="h-16 bg-white border-t border-gray-100 flex items-center justify-between px-16 text-gray-400 font-sans text-sm z-10">
+<div class="flex items-center">
+<span class="font-bold mr-2 text-navy-primary">BCA Semester III</span>
+<span>| Communication Skills</span>
+</div>
+<div class="flex items-center">
+<span class="mr-2">Page 12</span>
+</div>
+</div>
+<!-- Background Watermark -->
+<div class="absolute left-0 bottom-0 opacity-[0.03] pointer-events-none">
+<i class="fas fa-shapes text-[400px] text-navy-primary transform translate-y-1/3 -translate-x-1/4"></i>
+</div>
+</div>
+</body>
+</html>

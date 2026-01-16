@@ -1,0 +1,115 @@
+<!DOCTYPE html>
+
+<html lang="en">
+<head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Merriweather:wght@400;700;900&amp;family=Lato:wght@300;400;700&amp;display=swap" rel="stylesheet"/>
+<link href="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@6.4.0/css/all.min.css" rel="stylesheet"/>
+<style>
+    .font-serif { font-family: 'Merriweather', serif; }
+    .font-sans { font-family: 'Lato', sans-serif; }
+    .bg-navy-primary { background-color: #003366; } 
+    .text-navy-primary { color: #003366; }
+    .border-navy-primary { border-color: #003366; }
+    .text-accent-yellow { color: #F59E0B; }
+    
+    /* Custom Bullet Styling */
+    ul.academic-list li {
+        position: relative;
+        padding-left: 2rem;
+        margin-bottom: 1.25rem;
+    }
+    ul.academic-list li::before {
+        content: "\f0da"; /* FontAwesome caret-right */
+        font-family: "Font Awesome 6 Free";
+        font-weight: 900;
+        position: absolute;
+        left: 0;
+        top: 0.25rem;
+        color: #F59E0B; /* Accent yellow */
+        font-size: 1.25rem;
+    }
+</style>
+</head>
+<body class="m-0 p-0 overflow-hidden bg-gray-50">
+<div class="w-[1280px] h-[720px] bg-white flex flex-col shadow-xl mx-auto overflow-hidden relative">
+<!-- Top Decorative Bar -->
+<div class="h-4 bg-navy-primary w-full z-10"></div>
+<!-- Header Section -->
+<div class="px-16 pt-12 pb-6 border-b border-gray-100 flex justify-between items-end relative z-10">
+<div class="max-w-4xl">
+<p class="text-sm font-sans font-bold text-gray-400 uppercase tracking-widest mb-2">
+                Presentation Skills
+            </p>
+<h2 class="text-5xl font-serif font-bold text-navy-primary">
+                Conclusion &amp; Summary
+            </h2>
+</div>
+<!-- Topic Icon/Watermark for Header -->
+<div class="opacity-10 text-navy-primary">
+<i class="fas fa-clipboard-check text-6xl"></i>
+</div>
+</div>
+<!-- Main Content Area -->
+<div class="flex-1 px-16 py-8 flex relative z-0">
+<!-- Left Content (Text) -->
+<div class="w-2/3 pr-12">
+<ul class="academic-list font-sans text-2xl text-gray-700 leading-relaxed">
+<li>
+<p><span class="font-bold text-navy-primary">Prepare Thoroughly:</span> success begins with solid research, defining your scope, analyzing the audience, and effective time management.</p>
+</li>
+<li>
+<p><span class="font-bold text-navy-primary">Plan Clearly:</span> Structure your talk with a strong introduction, a logical body flow, smooth transitions, and a memorable closing.</p>
+</li>
+<li>
+<p><span class="font-bold text-navy-primary">Design Simply:</span> Create uncluttered slides with readable fonts and high contrast that support your message rather than distracting from it.</p>
+</li>
+<li>
+<p><span class="font-bold text-navy-primary">Deliver Confidently:</span> focus on vocal clarity, maintaining regular eye contact, and using a calm, steady pace.</p>
+</li>
+<li>
+<p><span class="font-bold text-navy-primary">Commit to Growth:</span> Treat every presentation as a chance to improve through practice and feedback.</p>
+</li>
+</ul>
+</div>
+<!-- Right Side - Visual Support / Emphasis Box -->
+<div class="w-1/3 pl-8 border-l border-gray-100 flex flex-col justify-center">
+<div class="bg-blue-50 p-8 rounded-lg border-t-4 border-navy-primary shadow-sm">
+<div class="text-center mb-4">
+<i class="fas fa-flag-checkered text-4xl text-accent-yellow"></i>
+</div>
+<h3 class="text-xl font-serif font-bold text-navy-primary text-center mb-4">Final Takeaway</h3>
+<p class="text-lg text-gray-600 font-sans italic text-center">
+                    "A great presentation is not just about sharing information; it is about making that information matter to your audience."
+                </p>
+</div>
+<!-- Closing Iconography -->
+<div class="mt-8 opacity-60 flex justify-center items-center flex-col">
+<p class="text-sm text-gray-400 font-bold uppercase mb-2">Thank You</p>
+<div class="flex space-x-2">
+<i class="fas fa-star text-gray-300"></i>
+<i class="fas fa-star text-gray-300"></i>
+<i class="fas fa-star text-gray-300"></i>
+</div>
+</div>
+</div>
+</div>
+<!-- Footer -->
+<div class="h-16 bg-white border-t border-gray-100 flex items-center justify-between px-16 text-gray-400 font-sans text-sm z-10">
+<div class="flex items-center">
+<span class="font-bold mr-2 text-navy-primary">BCA Semester III</span>
+<span>| Communication Skills</span>
+</div>
+<div class="flex items-center">
+<span class="mr-2">Page 15</span>
+</div>
+</div>
+<!-- Background Watermark -->
+<div class="absolute left-0 bottom-0 opacity-[0.03] pointer-events-none">
+<i class="fas fa-shapes text-[400px] text-navy-primary transform translate-y-1/3 -translate-x-1/4"></i>
+</div>
+</div>
+</body>
+</html>
