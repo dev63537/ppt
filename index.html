@@ -1,304 +1,310 @@
-<!doctype html>
+<!DOCTYPE html>
 <html lang="en">
-  <head>
-    <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Presentation Viewer</title>
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Presentation Viewer</title>
 
-    <style>
-      html,
-      body {
-        margin: 0;
-        padding: 0;
-        height: 100%;
-        background: #000;
-        overflow: hidden;
-        font-family: Arial, sans-serif;
-      }
+<style>
+html, body {
+  margin: 0;
+  padding: 0;
+  height: 100%;
+  background: #000;
+  overflow: hidden;
+  font-family: Arial, sans-serif;
+}
 
-      /* ===== LAYOUT ===== */
-      #app {
-        display: flex;
-        width: 100vw;
-        height: 100vh;
-      }
+/* ===== ROOT ===== */
+#app {
+  display: flex;
+  width: 100vw;
+  height: 100vh;
+}
 
-      /* ===== SIDEBAR ===== */
-      #sidebar {
-        flex: 0 0 0;
-        background: #0f0f0f;
-        overflow-y: auto;
-        transition: flex-basis 0.35s ease;
-      }
+/* ===== SIDEBAR ===== */
+#sidebar {
+  flex: 0 0 0;
+  background: #0f0f0f;
+  overflow-y: auto;
+  transition: flex-basis 0.35s ease;
+}
 
-      #sidebar.show {
-        flex: 0 0 280px;
-      }
+#sidebar.show {
+  flex: 0 0 280px;
+}
 
-      /* ===== THUMBNAILS (REAL SIZE) ===== */
-      .thumb {
-        width: 240px;
-        height: 135px; /* 16:9 compact */
-        margin: 10px auto;
-        overflow: hidden;
-        border: 3px solid transparent;
-        background: #000;
-        cursor: pointer;
-      }
+/* ===== THUMBNAILS ===== */
+.thumb {
+  width: 240px;
+  height: 135px;
+  margin: 10px auto;
+  overflow: hidden;
+  border: 3px solid transparent;
+  background: #000;
+  cursor: pointer;
+}
 
-      .thumb.active {
-        border-color: #ff2d75;
-      }
+.thumb.active {
+  border-color: #ff2d75;
+}
 
-      .thumb iframe {
-        width: 1280px;
-        height: 720px;
-        transform: scale(0.1875); /* 240 / 1280 */
-        transform-origin: top left;
-        pointer-events: none;
-      }
+.thumb iframe {
+  width: 1280px;
+  height: 720px;
+  transform: scale(0.1875);
+  transform-origin: top left;
+  pointer-events: none;
+}
 
-      /* ===== MAIN ===== */
-      #main {
-        flex: 1;
-        position: relative;
-        display: flex;
-        justify-content: center;
-        align-items: center;
-        touch-action: pan-y;
-      }
+/* ===== MAIN ===== */
+#main {
+  flex: 1;
+  position: relative;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
 
-      /* ===== SLIDE ===== */
-      #slideWrap {
-        display: flex;
-        justify-content: center;
-        align-items: center;
-      }
+/* ===== SLIDE WRAPPER (IMPORTANT FIX) ===== */
+#scaleWrap {
+  width: 1280px;
+  height: 720px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  transform-origin: center center;
+}
 
-      iframe#slide {
-        width: 1280px;
-        height: 720px;
-        border: none;
-        background: white;
-        opacity: 0;
-        transition: opacity 0.45s ease;
-      }
+/* ===== SLIDE ===== */
+iframe#slide {
+  width: 1280px;
+  height: 720px;
+  border: none;
+  background: white;
+  opacity: 0;
+  transition: opacity 0.4s ease;
+}
 
-      iframe#slide.show {
-        opacity: 1;
-      }
+iframe#slide.show {
+  opacity: 1;
+}
 
-      /* ===== CONTROLS ===== */
-      #controls {
-        position: absolute;
-        top: 12px;
-        left: 12px;
-        display: flex;
-        gap: 8px;
-        z-index: 10;
-      }
+/* ===== CONTROLS ===== */
+#controls {
+  position: absolute;
+  top: 12px;
+  left: 12px;
+  display: flex;
+  gap: 8px;
+  z-index: 10;
+}
 
-      button {
-        background: #111;
-        color: white;
-        border: 1px solid #444;
-        padding: 6px 10px;
-        cursor: pointer;
-        border-radius: 4px;
-      }
+button {
+  background: #111;
+  color: white;
+  border: 1px solid #444;
+  padding: 6px 10px;
+  cursor: pointer;
+  border-radius: 4px;
+}
 
-      button:hover {
-        background: #333;
-      }
+button:hover {
+  background: #333;
+}
 
-      /* ===== FOOTER ===== */
-      #footer {
-        position: absolute;
-        bottom: 16px;
-        right: 16px;
-        color: white;
-        font-size: 14px;
-      }
+/* ===== FOOTER ===== */
+#footer {
+  position: absolute;
+  bottom: 16px;
+  right: 16px;
+  color: white;
+  font-size: 14px;
+}
 
-      /* ===== YOUTUBE STYLE PROGRESS ===== */
-      #progressWrap {
-        position: absolute;
-        bottom: 0;
-        left: 0;
-        width: 100%;
-        height: 4px;
-        background: #222;
-      }
+/* ===== PROGRESS (YOUTUBE STYLE) ===== */
+#progressWrap {
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  width: 100%;
+  height: 4px;
+  background: #222;
+}
 
-      #progress {
-        height: 100%;
-        width: 0%;
-        background: #ff2d75;
-        transition: width 0.25s linear;
-      }
-    </style>
-  </head>
+#progress {
+  height: 100%;
+  width: 0%;
+  background: #ff2d75;
+  transition: width 0.25s linear;
+}
+</style>
+</head>
 
-  <body>
-    <div id="app">
-      <!-- SIDEBAR -->
-      <div id="sidebar"></div>
+<body>
+<div id="app">
 
-      <!-- MAIN -->
-      <div id="main" id="swipeArea">
-        <div id="controls">
-          <button id="menuBtn">☰</button>
-          <button id="fsBtn">⛶</button>
-        </div>
+  <!-- SIDEBAR -->
+  <div id="sidebar"></div>
 
-        <div id="slideWrap">
-          <iframe id="slide"></iframe>
-        </div>
+  <!-- MAIN -->
+  <div id="main">
 
-        <div id="footer">
-          <span id="counter"></span>
-        </div>
-
-        <div id="progressWrap">
-          <div id="progress"></div>
-        </div>
-      </div>
+    <div id="controls">
+      <button id="menuBtn">☰</button>
+      <button id="fsBtn">⛶</button>
     </div>
 
-    <script>
-      /* ===== SLIDES (PAGE 7 SKIPPED) ===== */
-      const slides = [
-        "page_1.html",
-        "page_2.html",
-        "page_3.html",
-        "page_4.html",
-        "page_5.html",
-        "page_6.html",
-        "page_8.html",
-        "page_9.html",
-        "page_10.html",
-        "page_11.html",
-        "page_12.html",
-        "page_13.html",
-        "page_14.html",
-        "page_15.html",
-        "page_16.html",
-      ];
+    <div id="scaleWrap">
+      <iframe id="slide"></iframe>
+    </div>
 
-      let index = 0;
-      let autoplay = false;
-      let timer = null;
+    <div id="footer">
+      <span id="counter"></span>
+    </div>
 
-      const iframe = document.getElementById("slide");
-      const sidebar = document.getElementById("sidebar");
-      const counter = document.getElementById("counter");
-      const progress = document.getElementById("progress");
-      const main = document.getElementById("main");
+    <div id="progressWrap">
+      <div id="progress"></div>
+    </div>
 
-      /* ===== SCALE (NO CUT) ===== */
-      function scaleSlide() {
-        const scale = Math.min(
-          window.innerWidth / 1280,
-          window.innerHeight / 720,
-        );
-        iframe.style.transform = `scale(${scale})`;
-      }
+  </div>
+</div>
 
-      /* ===== LOAD SLIDE ===== */
-      function loadSlide() {
-        iframe.classList.remove("show");
-        setTimeout(() => {
-          iframe.src = slides[index];
-          iframe.classList.add("show");
-          counter.textContent = `${index + 1} / ${slides.length}`;
-          progress.style.width = `${((index + 1) / slides.length) * 100}%`;
-          updateThumbs();
-          scaleSlide();
-        }, 120);
-      }
+<script>
+/* ===== SLIDES ===== */
+const slides = [
+  "page_1.html","page_2.html","page_3.html","page_4.html",
+  "page_5.html","page_6.html",
+  "page_8.html","page_9.html","page_10.html","page_11.html",
+  "page_12.html","page_13.html","page_14.html","page_15.html","page_16.html"
+];
 
-      /* ===== NAV ===== */
-      function next() {
-        index = (index + 1) % slides.length;
-        loadSlide();
-      }
-      function prev() {
-        index = (index - 1 + slides.length) % slides.length;
-        loadSlide();
-      }
+let index = 0;
+let autoplay = false;
+let timer = null;
 
-      /* ===== AUTOPLAY (SPACE, 2s, LOOP) ===== */
-      function startAutoplay() {
-        autoplay = true;
-        timer = setInterval(next, 2000);
-      }
-      function stopAutoplay() {
-        autoplay = false;
-        clearInterval(timer);
-      }
+const iframe = document.getElementById("slide");
+const scaleWrap = document.getElementById("scaleWrap");
+const sidebar = document.getElementById("sidebar");
+const counter = document.getElementById("counter");
+const progress = document.getElementById("progress");
+const main = document.getElementById("main");
 
-      document.addEventListener("keydown", (e) => {
-        if (e.code === "Space") {
-          e.preventDefault();
-          autoplay ? stopAutoplay() : startAutoplay();
-        }
-        if (e.key === "ArrowRight") next();
-        if (e.key === "ArrowLeft") prev();
-      });
+/* ===== SCALE FIX (NO CUT, NO EXTRA SPACE) ===== */
+function scaleSlide() {
+  const scale = Math.min(
+    main.clientWidth / 1280,
+    main.clientHeight / 720
+  );
+  scaleWrap.style.transform = `scale(${scale})`;
+}
 
-      /* ===== SWIPE (FIXED) ===== */
-      let startX = 0;
+/* ===== LOAD SLIDE ===== */
+function loadSlide() {
+  iframe.classList.remove("show");
+  setTimeout(() => {
+    iframe.src = slides[index];
+    iframe.classList.add("show");
+    counter.textContent = `${index + 1} / ${slides.length}`;
+    progress.style.width = `${((index + 1) / slides.length) * 100}%`;
+    updateThumbs();
+    scaleSlide();
+  }, 100);
+}
 
-      main.addEventListener(
-        "touchstart",
-        (e) => {
-          startX = e.touches[0].clientX;
-        },
-        { passive: true },
-      );
+/* ===== NAV ===== */
+function next() {
+  index = (index + 1) % slides.length;
+  loadSlide();
+}
+function prev() {
+  index = (index - 1 + slides.length) % slides.length;
+  loadSlide();
+}
 
-      main.addEventListener("touchend", (e) => {
-        const diff = startX - e.changedTouches[0].clientX;
-        if (diff > 50) next();
-        if (diff < -50) prev();
-      });
+/* ===== AUTOPLAY ===== */
+function startAutoplay() {
+  autoplay = true;
+  timer = setInterval(next, 2000);
+}
+function stopAutoplay() {
+  autoplay = false;
+  clearInterval(timer);
+}
 
-      /* ===== FULLSCREEN ===== */
-      document.getElementById("fsBtn").onclick = () => {
-        document.documentElement.requestFullscreen();
-      };
+/* ===== KEYBOARD ===== */
+document.addEventListener("keydown", e => {
+  if (e.code === "Space") {
+    e.preventDefault();
+    autoplay ? stopAutoplay() : startAutoplay();
+  }
+  if (e.key === "ArrowRight") next();
+  if (e.key === "ArrowLeft") prev();
+});
 
-      /* ===== SIDEBAR ===== */
-      document.getElementById("menuBtn").onclick = () => {
-        sidebar.classList.toggle("show");
-      };
+/* ===== TOUCH + MOUSE SWIPE ===== */
+let startX = 0;
+let isDown = false;
 
-      function buildThumbs() {
-        slides.forEach((src, i) => {
-          const div = document.createElement("div");
-          div.className = "thumb";
-          const f = document.createElement("iframe");
-          f.src = src;
-          div.appendChild(f);
-          div.onclick = () => {
-            index = i;
-            loadSlide();
-            sidebar.classList.remove("show");
-          };
-          sidebar.appendChild(div);
-        });
-      }
+main.addEventListener("touchstart", e => {
+  startX = e.touches[0].clientX;
+}, { passive: true });
 
-      function updateThumbs() {
-        [...sidebar.children].forEach((t, i) => {
-          t.classList.toggle("active", i === index);
-        });
-      }
+main.addEventListener("touchend", e => {
+  const diff = startX - e.changedTouches[0].clientX;
+  if (diff > 60) next();
+  if (diff < -60) prev();
+});
 
-      /* ===== INIT ===== */
-      buildThumbs();
+main.addEventListener("mousedown", e => {
+  isDown = true;
+  startX = e.clientX;
+});
+
+main.addEventListener("mouseup", e => {
+  if (!isDown) return;
+  const diff = startX - e.clientX;
+  if (diff > 80) next();
+  if (diff < -80) prev();
+  isDown = false;
+});
+
+/* ===== FULLSCREEN ===== */
+document.getElementById("fsBtn").onclick = () => {
+  document.documentElement.requestFullscreen();
+};
+
+/* ===== SIDEBAR ===== */
+document.getElementById("menuBtn").onclick = () => {
+  sidebar.classList.toggle("show");
+};
+
+function buildThumbs() {
+  slides.forEach((src, i) => {
+    const div = document.createElement("div");
+    div.className = "thumb";
+    const f = document.createElement("iframe");
+    f.src = src;
+    div.appendChild(f);
+    div.onclick = () => {
+      index = i;
       loadSlide();
-      window.addEventListener("resize", scaleSlide);
-    </script>
-  </body>
+      sidebar.classList.remove("show");
+    };
+    sidebar.appendChild(div);
+  });
+}
+
+function updateThumbs() {
+  [...sidebar.children].forEach((t, i) => {
+    t.classList.toggle("active", i === index);
+  });
+}
+
+/* ===== INIT ===== */
+buildThumbs();
+loadSlide();
+window.addEventListener("resize", scaleSlide);
+</script>
+</body>
 </html>
