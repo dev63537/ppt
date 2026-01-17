@@ -1,8 +1,8 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
 <title>Presentation Viewer</title>
 
 <style>
@@ -27,20 +27,19 @@ html, body {
   flex: 0 0 0;
   background: #0f0f0f;
   overflow-y: auto;
-  transition: flex-basis 0.35s ease;
+  transition: flex-basis 0.3s ease;
 }
 
 #sidebar.show {
-  flex: 0 0 280px;
+  flex: 0 0 260px;
 }
 
-/* ===== THUMBNAILS ===== */
 .thumb {
-  width: 240px;
-  height: 135px;
+  width: 220px;
+  aspect-ratio: 16 / 9;
   margin: 10px auto;
-  overflow: hidden;
   border: 3px solid transparent;
+  overflow: hidden;
   background: #000;
   cursor: pointer;
 }
@@ -50,10 +49,8 @@ html, body {
 }
 
 .thumb iframe {
-  width: 1280px;
-  height: 720px;
-  transform: scale(0.1875);
-  transform-origin: top left;
+  width: 100%;
+  height: 100%;
   pointer-events: none;
 }
 
@@ -66,27 +63,27 @@ html, body {
   align-items: center;
 }
 
-/* ===== SLIDE WRAPPER (IMPORTANT FIX) ===== */
-#scaleWrap {
-  width: 1280px;
-  height: 720px;
+/* ===== SLIDE CONTAINER (NO CUT EVER) ===== */
+#slideBox {
+  width: min(100vw, calc(100vh * 16 / 9));
+  aspect-ratio: 16 / 9;
+  background: #000;
   display: flex;
   justify-content: center;
   align-items: center;
-  transform-origin: center center;
 }
 
 /* ===== SLIDE ===== */
-iframe#slide {
-  width: 1280px;
-  height: 720px;
+#slide {
+  width: 100%;
+  height: 100%;
   border: none;
   background: white;
   opacity: 0;
   transition: opacity 0.4s ease;
 }
 
-iframe#slide.show {
+#slide.show {
   opacity: 1;
 }
 
@@ -109,20 +106,16 @@ button {
   border-radius: 4px;
 }
 
-button:hover {
-  background: #333;
-}
-
 /* ===== FOOTER ===== */
 #footer {
   position: absolute;
-  bottom: 16px;
+  bottom: 14px;
   right: 16px;
   color: white;
   font-size: 14px;
 }
 
-/* ===== PROGRESS (YOUTUBE STYLE) ===== */
+/* ===== YOUTUBE STYLE PROGRESS ===== */
 #progressWrap {
   position: absolute;
   bottom: 0;
@@ -137,6 +130,13 @@ button:hover {
   width: 0%;
   background: #ff2d75;
   transition: width 0.25s linear;
+}
+
+/* ===== GLOBAL SWIPE LAYER ===== */
+#swipeLayer {
+  position: absolute;
+  inset: 0;
+  z-index: 5;
 }
 </style>
 </head>
@@ -155,7 +155,7 @@ button:hover {
       <button id="fsBtn">⛶</button>
     </div>
 
-    <div id="scaleWrap">
+    <div id="slideBox">
       <iframe id="slide"></iframe>
     </div>
 
@@ -166,6 +166,9 @@ button:hover {
     <div id="progressWrap">
       <div id="progress"></div>
     </div>
+
+    <!-- SWIPE ANYWHERE -->
+    <div id="swipeLayer"></div>
 
   </div>
 </div>
@@ -183,32 +186,21 @@ let index = 0;
 let autoplay = false;
 let timer = null;
 
-const iframe = document.getElementById("slide");
-const scaleWrap = document.getElementById("scaleWrap");
+const slide = document.getElementById("slide");
 const sidebar = document.getElementById("sidebar");
 const counter = document.getElementById("counter");
 const progress = document.getElementById("progress");
-const main = document.getElementById("main");
-
-/* ===== SCALE FIX (NO CUT, NO EXTRA SPACE) ===== */
-function scaleSlide() {
-  const scale = Math.min(
-    main.clientWidth / 1280,
-    main.clientHeight / 720
-  );
-  scaleWrap.style.transform = `scale(${scale})`;
-}
+const swipeLayer = document.getElementById("swipeLayer");
 
 /* ===== LOAD SLIDE ===== */
 function loadSlide() {
-  iframe.classList.remove("show");
+  slide.classList.remove("show");
   setTimeout(() => {
-    iframe.src = slides[index];
-    iframe.classList.add("show");
+    slide.src = slides[index];
+    slide.classList.add("show");
     counter.textContent = `${index + 1} / ${slides.length}`;
     progress.style.width = `${((index + 1) / slides.length) * 100}%`;
     updateThumbs();
-    scaleSlide();
   }, 100);
 }
 
@@ -242,37 +234,32 @@ document.addEventListener("keydown", e => {
   if (e.key === "ArrowLeft") prev();
 });
 
-/* ===== TOUCH + MOUSE SWIPE ===== */
+/* ===== SWIPE ANYWHERE ===== */
 let startX = 0;
-let isDown = false;
+let dragging = false;
 
-main.addEventListener("touchstart", e => {
+swipeLayer.addEventListener("touchstart", e => {
   startX = e.touches[0].clientX;
 }, { passive: true });
 
-main.addEventListener("touchend", e => {
+swipeLayer.addEventListener("touchend", e => {
   const diff = startX - e.changedTouches[0].clientX;
   if (diff > 60) next();
   if (diff < -60) prev();
 });
 
-main.addEventListener("mousedown", e => {
-  isDown = true;
+swipeLayer.addEventListener("mousedown", e => {
+  dragging = true;
   startX = e.clientX;
 });
 
-main.addEventListener("mouseup", e => {
-  if (!isDown) return;
+swipeLayer.addEventListener("mouseup", e => {
+  if (!dragging) return;
   const diff = startX - e.clientX;
   if (diff > 80) next();
   if (diff < -80) prev();
-  isDown = false;
+  dragging = false;
 });
-
-/* ===== FULLSCREEN ===== */
-document.getElementById("fsBtn").onclick = () => {
-  document.documentElement.requestFullscreen();
-};
 
 /* ===== SIDEBAR ===== */
 document.getElementById("menuBtn").onclick = () => {
@@ -301,10 +288,14 @@ function updateThumbs() {
   });
 }
 
+/* ===== FULLSCREEN ===== */
+document.getElementById("fsBtn").onclick = () => {
+  document.documentElement.requestFullscreen();
+};
+
 /* ===== INIT ===== */
 buildThumbs();
 loadSlide();
-window.addEventListener("resize", scaleSlide);
 </script>
 </body>
 </html>
