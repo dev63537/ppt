@@ -1,322 +1,352 @@
-<!DOCTYPE html>
+<!doctype html>
 <html lang="en">
-<head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Presentation Viewer</title>
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Fullscreen Presentation Viewer</title>
 
-<style>
-html, body {
-  margin: 0;
-  padding: 0;
-  height: 100%;
-  background: #000;
-  overflow: hidden;
-  font-family: Arial, sans-serif;
-}
+    <style>
+      html,
+      body {
+        margin: 0;
+        padding: 0;
+        width: 100%;
+        height: 100%;
+        background: #000;
+        overflow: hidden;
+        font-family: Arial, sans-serif;
+      }
 
-/* ===== APP ===== */
-#app {
-  display: flex;
-  width: 100vw;
-  height: 100vh;
-}
+      /* ===== APP ===== */
+      #app {
+        display: flex;
+        width: 100vw;
+        height: 100vh;
+      }
 
-/* ===== SIDEBAR ===== */
-#sidebar {
-  flex: 0 0 0;
-  background: #0f0f0f;
-  overflow-y: auto;
-  transition: flex-basis 0.3s ease;
-}
+      /* ===== SIDEBAR ===== */
+      #sidebar {
+        width: 0;
+        background: #0f0f0f;
+        overflow-y: auto;
+        transition: width 0.3s ease;
+      }
 
-#sidebar.show {
-  flex: 0 0 260px;
-}
+      #sidebar.show {
+        width: 260px;
+      }
 
-/* ===== THUMBNAILS ===== */
-.thumb {
-  width: 220px;
-  aspect-ratio: 16 / 9;
-  margin: 10px auto;
-  border: 3px solid transparent;
-  overflow: hidden;
-  background: #000;
-  cursor: pointer;
-}
+      /* ===== THUMBNAILS ===== */
+      .thumb {
+        width: 220px;
+        aspect-ratio: 16 / 9;
+        margin: 10px auto;
+        border: 3px solid transparent;
+        background: #000;
+        cursor: pointer;
+      }
 
-.thumb.active {
-  border-color: #ff2d75;
-}
+      .thumb.active {
+        border-color: #ff2d75;
+      }
 
-.thumb iframe {
-  width: 100%;
-  height: 100%;
-  pointer-events: none;
-}
+      .thumb iframe {
+        width: 100%;
+        height: 100%;
+        border: none;
+        pointer-events: none;
+      }
 
-/* ===== MAIN ===== */
-#main {
-  flex: 1;
-  position: relative;
-  display: flex;
-  justify-content: center;
-  align-items: center;
-}
+      /* ===== MAIN ===== */
+      #main {
+        flex: 1;
+        position: relative;
+        display: flex;
+        flex-direction: column;
+      }
 
-/* ===== SLIDE BOX (NO CUT, SCROLL ENABLED) ===== */
-#slideBox {
-  width: 100%;
-  height: 100%;
-  max-width: 1280px;
-  margin: auto;
-  overflow-y: auto;
-  overflow-x: hidden;
-  background: #000;
-  -webkit-overflow-scrolling: touch;
-}
+      /* ===== CONTROLS ===== */
+      #controls {
+        position: absolute;
+        top: 12px;
+        left: 12px;
+        display: flex;
+        gap: 8px;
+        z-index: 30;
+      }
 
-/* ===== SLIDE ===== */
-#slide {
-  width: 100%;
-  min-height: 720px;
-  border: none;
-  background: white;
-  opacity: 0;
-  transition: opacity 0.35s ease;
-}
+      button {
+        background: #111;
+        color: #fff;
+        border: 1px solid #444;
+        padding: 6px 10px;
+        border-radius: 4px;
+        cursor: pointer;
+      }
 
-#slide.show {
-  opacity: 1;
-}
+      button:hover {
+        background: #333;
+      }
 
-/* ===== CONTROLS ===== */
-#controls {
-  position: absolute;
-  top: 12px;
-  left: 12px;
-  display: flex;
-  gap: 8px;
-  z-index: 20;
-}
+      /* ===== SLIDE BOX ===== */
+      #slideBox {
+        flex: 1;
+        width: 100%;
+        height: 100%;
+        overflow: hidden;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+      }
 
-button {
-  background: #111;
-  color: white;
-  border: 1px solid #444;
-  padding: 6px 10px;
-  cursor: pointer;
-  border-radius: 4px;
-}
+      /* ===== SLIDE WRAPPER ===== */
+      #slideWrapper {
+        width: 1280px;
+        height: 720px;
+        transform-origin: center center;
+      }
 
-button:hover {
-  background: #333;
-}
+      /* ===== IFRAME ===== */
+      #slide {
+        width: 100%;
+        height: 100%;
+        border: none;
+        background: #fff;
+        opacity: 0;
+        transition: opacity 0.3s ease;
+      }
 
-/* ===== FOOTER ===== */
-#footer {
-  position: absolute;
-  bottom: 14px;
-  right: 16px;
-  color: white;
-  font-size: 14px;
-  z-index: 20;
-}
+      #slide.show {
+        opacity: 1;
+      }
 
-/* ===== YOUTUBE STYLE PROGRESS ===== */
-#progressWrap {
-  position: absolute;
-  bottom: 0;
-  left: 0;
-  width: 100%;
-  height: 4px;
-  background: #222;
-  z-index: 20;
-}
+      /* ===== FOOTER ===== */
+      #footer {
+        position: absolute;
+        bottom: 12px;
+        right: 16px;
+        color: #c52020;
+        z-index: 20;
+      }
 
-#progress {
-  height: 100%;
-  width: 0%;
-  background: #ff2d75;
-  transition: width 0.25s linear;
-}
+      /* ===== PROGRESS ===== */
+      #progressWrap {
+        position: absolute;
+        bottom: 0;
+        left: 0;
+        height: 4px;
+        width: 100%;
+        background: #222;
+        z-index: 20;
+      }
 
-/* ===== GLOBAL SWIPE LAYER ===== */
-#swipeLayer {
-  position: absolute;
-  inset: 0;
-  z-index: 10;
-}
-</style>
-</head>
+      #progress {
+        height: 100%;
+        width: 0%;
+        background: #ff2d75;
+        transition: width 0.25s linear;
+      }
 
-<body>
-<div id="app">
+      /* ===== SWIPE LAYER ===== */
+      #swipeLayer {
+        position: absolute;
+        inset: 0;
+        z-index: 10;
+      }
+    </style>
+  </head>
 
-  <!-- SIDEBAR -->
-  <div id="sidebar"></div>
+  <body>
+    <div id="app">
+      <div id="sidebar"></div>
 
-  <!-- MAIN -->
-  <div id="main">
+      <div id="main">
+        <div id="controls">
+          <button id="menuBtn">☰</button>
+          <button id="fsBtn">⛶</button>
+        </div>
 
-    <div id="controls">
-      <button id="menuBtn">☰</button>
-      <button id="fsBtn">⛶</button>
+        <div id="slideBox">
+          <div id="slideWrapper">
+            <iframe id="slide"></iframe>
+          </div>
+        </div>
+
+        <div id="footer">
+          <span id="counter"></span>
+        </div>
+
+        <div id="progressWrap">
+          <div id="progress"></div>
+        </div>
+
+        <!-- swipe -->
+        <div id="swipeLayer"></div>
+      </div>
     </div>
 
-    <div id="slideBox">
-      <iframe id="slide"></iframe>
-    </div>
+    <script>
+      /* ===== SLIDES ===== */
+      const slides = [
+        "page_1.html",
+        "page_2.html",
+        "page_3.html",
+        "page_4.html",
+        "page_5.html",
+        "page_6.html",
+        "page_8.html",
+        "page_9.html",
+        "page_10.html",
+        "page_11.html",
+        "page_12.html",
+        "page_13.html",
+        "page_14.html",
+        "page_15.html",
+        "page_16.html",
+      ];
 
-    <div id="footer">
-      <span id="counter"></span>
-    </div>
+      let index = 0;
+      let autoplay = false;
+      let timer = null;
 
-    <div id="progressWrap">
-      <div id="progress"></div>
-    </div>
+      const slide = document.getElementById("slide");
+      const sidebar = document.getElementById("sidebar");
+      const counter = document.getElementById("counter");
+      const progress = document.getElementById("progress");
+      const slideWrapper = document.getElementById("slideWrapper");
+      const slideBox = document.getElementById("slideBox");
+      const swipeLayer = document.getElementById("swipeLayer");
 
-    <!-- Swipe Anywhere -->
-    <div id="swipeLayer"></div>
+      /* ===== LOAD SLIDE ===== */
+      function loadSlide() {
+        slide.classList.remove("show");
+        setTimeout(() => {
+          slide.src = slides[index];
+          slide.classList.add("show");
+          counter.textContent = `${index + 1} / ${slides.length}`;
+          progress.style.width = `${((index + 1) / slides.length) * 100}%`;
+          updateThumbs();
+        }, 100);
+      }
 
-  </div>
-</div>
+      /* ===== SCALE ===== */
+      function scaleSlide() {
+        const w = slideBox.clientWidth;
+        const h = slideBox.clientHeight;
+        const scale = Math.min(w / 1280, h / 720);
+        slideWrapper.style.transform = `scale(${scale})`;
+      }
 
-<script>
-/* ===== SLIDES (PAGE 7 SKIPPED) ===== */
-const slides = [
-  "page_1.html","page_2.html","page_3.html","page_4.html",
-  "page_5.html","page_6.html",
-  "page_8.html","page_9.html","page_10.html","page_11.html",
-  "page_12.html","page_13.html","page_14.html","page_15.html","page_16.html"
-];
+      window.addEventListener("resize", scaleSlide);
+      document.addEventListener("fullscreenchange", scaleSlide);
 
-let index = 0;
-let autoplay = false;
-let timer = null;
+      /* ===== NAV ===== */
+      function next() {
+        index = (index + 1) % slides.length;
+        loadSlide();
+      }
 
-const slide = document.getElementById("slide");
-const sidebar = document.getElementById("sidebar");
-const counter = document.getElementById("counter");
-const progress = document.getElementById("progress");
-const swipeLayer = document.getElementById("swipeLayer");
+      function prev() {
+        index = (index - 1 + slides.length) % slides.length;
+        loadSlide();
+      }
 
-/* ===== LOAD SLIDE ===== */
-function loadSlide() {
-  slide.classList.remove("show");
-  setTimeout(() => {
-    slide.src = slides[index];
-    slide.classList.add("show");
-    counter.textContent = `${index + 1} / ${slides.length}`;
-    progress.style.width = `${((index + 1) / slides.length) * 100}%`;
-    updateThumbs();
-    document.getElementById("slideBox").scrollTop = 0;
-  }, 100);
-}
+      /* ===== AUTOPLAY ===== */
+      function startAutoplay() {
+        autoplay = true;
+        timer = setInterval(next, 2000);
+      }
 
-/* ===== NAV ===== */
-function next() {
-  index = (index + 1) % slides.length;
-  loadSlide();
-}
+      function stopAutoplay() {
+        autoplay = false;
+        clearInterval(timer);
+      }
 
-function prev() {
-  index = (index - 1 + slides.length) % slides.length;
-  loadSlide();
-}
+      /* ===== KEYBOARD ===== */
+      document.addEventListener("keydown", (e) => {
+        if (e.code === "Space") {
+          e.preventDefault();
+          autoplay ? stopAutoplay() : startAutoplay();
+        }
+        if (e.key === "ArrowRight") next();
+        if (e.key === "ArrowLeft") prev();
+      });
 
-/* ===== AUTOPLAY ===== */
-function startAutoplay() {
-  autoplay = true;
-  timer = setInterval(next, 2000);
-}
+      /* ===== TOUCH SWIPE ===== */
+      let startX = 0;
+      let startY = 0;
 
-function stopAutoplay() {
-  autoplay = false;
-  clearInterval(timer);
-}
+      swipeLayer.addEventListener(
+        "touchstart",
+        (e) => {
+          startX = e.touches[0].clientX;
+          startY = e.touches[0].clientY;
+        },
+        { passive: true },
+      );
 
-/* ===== KEYBOARD ===== */
-document.addEventListener("keydown", e => {
-  if (e.code === "Space") {
-    e.preventDefault();
-    autoplay ? stopAutoplay() : startAutoplay();
-  }
-  if (e.key === "ArrowRight") next();
-  if (e.key === "ArrowLeft") prev();
-});
+      swipeLayer.addEventListener("touchend", (e) => {
+        const dx = e.changedTouches[0].clientX - startX;
+        const dy = e.changedTouches[0].clientY - startY;
+        if (Math.abs(dx) > Math.abs(dy) && Math.abs(dx) > 60) {
+          dx < 0 ? next() : prev();
+        }
+      });
 
-/* ===== SWIPE (HORIZONTAL ONLY) ===== */
-let startX = 0;
-let startY = 0;
+      /* ===== MOUSE SWIPE ===== */
+      let mouseDown = false;
+      let mouseX = 0;
 
-swipeLayer.addEventListener("touchstart", e => {
-  startX = e.touches[0].clientX;
-  startY = e.touches[0].clientY;
-}, { passive: true });
+      swipeLayer.addEventListener("mousedown", (e) => {
+        mouseDown = true;
+        mouseX = e.clientX;
+      });
 
-swipeLayer.addEventListener("touchend", e => {
-  const dx = e.changedTouches[0].clientX - startX;
-  const dy = e.changedTouches[0].clientY - startY;
+      swipeLayer.addEventListener("mouseup", (e) => {
+        if (!mouseDown) return;
+        const dx = mouseX - e.clientX;
+        if (Math.abs(dx) > 80) {
+          dx > 0 ? next() : prev();
+        }
+        mouseDown = false;
+      });
 
-  if (Math.abs(dx) > Math.abs(dy) && Math.abs(dx) > 60) {
-    dx < 0 ? next() : prev();
-  }
-});
+      /* ===== SIDEBAR ===== */
+      document.getElementById("menuBtn").onclick = () => {
+        sidebar.classList.toggle("show");
+      };
 
-/* ===== MOUSE DRAG SWIPE ===== */
-let mouseDown = false;
-let mouseX = 0;
+      function buildThumbs() {
+        slides.forEach((src, i) => {
+          const d = document.createElement("div");
+          d.className = "thumb";
+          const f = document.createElement("iframe");
+          f.src = src;
+          d.appendChild(f);
+          d.onclick = () => {
+            index = i;
+            loadSlide();
+            sidebar.classList.remove("show");
+          };
+          sidebar.appendChild(d);
+        });
+      }
 
-swipeLayer.addEventListener("mousedown", e => {
-  mouseDown = true;
-  mouseX = e.clientX;
-});
+      function updateThumbs() {
+        [...sidebar.children].forEach((t, i) => {
+          t.classList.toggle("active", i === index);
+        });
+      }
 
-swipeLayer.addEventListener("mouseup", e => {
-  if (!mouseDown) return;
-  const dx = mouseX - e.clientX;
-  if (Math.abs(dx) > 80) {
-    dx > 0 ? next() : prev();
-  }
-  mouseDown = false;
-});
+      /* ===== FULLSCREEN ===== */
+      document.getElementById("fsBtn").onclick = () => {
+        document.documentElement.requestFullscreen();
+      };
 
-/* ===== SIDEBAR ===== */
-document.getElementById("menuBtn").onclick = () => {
-  sidebar.classList.toggle("show");
-};
-
-function buildThumbs() {
-  slides.forEach((src, i) => {
-    const div = document.createElement("div");
-    div.className = "thumb";
-    const f = document.createElement("iframe");
-    f.src = src;
-    div.appendChild(f);
-    div.onclick = () => {
-      index = i;
+      /* ===== INIT ===== */
+      buildThumbs();
       loadSlide();
-      sidebar.classList.remove("show");
-    };
-    sidebar.appendChild(div);
-  });
-}
-
-function updateThumbs() {
-  [...sidebar.children].forEach((t, i) => {
-    t.classList.toggle("active", i === index);
-  });
-}
-
-/* ===== FULLSCREEN ===== */
-document.getElementById("fsBtn").onclick = () => {
-  document.documentElement.requestFullscreen();
-};
-
-/* ===== INIT ===== */
-buildThumbs();
-loadSlide();
-</script>
-</body>
+      scaleSlide();
+    </script>
+  </body>
 </html>
